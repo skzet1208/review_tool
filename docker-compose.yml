@@ -1,0 +1,28 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ./env/nginx
+    volumes:
+      - ./app:/var/www/app
+    ports:
+      - "8000:80"
+    links:
+      - app
+  app:
+    build:
+      context: ./env/php
+    volumes:
+      - ./app:/var/www/app
+    links:
+      - mysql
+  mysql:
+    restart: always
+    image: mysql:5.7
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: test
+    ports:
+        - "3316:3306"
