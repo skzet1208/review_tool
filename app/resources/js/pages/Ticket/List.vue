@@ -1,45 +1,43 @@
 <template>
   <div>
     <el-tabs v-model="activeName">
-      <el-tab-pane label="User" name="first">
+      <el-tab-pane label="All" name="all">All</el-tab-pane>
+      <el-tab-pane label="My" name="my">
         <div class="ticket-list">
           <el-row :gutter="10">
             <el-col :span="8">
               <h5><i class="el-icon-tickets"></i>Ticket</h5>
-              <draggable class="ticket-line" v-model="myList" :options="dragOptions">
-                <TaskCard v-for="item in items" :item="item" :key="item.id"></TaskCard>
+              <draggable class="ticket-line" v-model="tickets" :options="dragOptions">
+                <TicketCard v-for="ticket in tickets" :ticket="ticket" :key="ticket.id"></TicketCard>
               </draggable>
             </el-col>
             <el-col :span="8">
               <h5><i class="el-icon-message"></i>Comment</h5>
-              <draggable class="ticket-line" v-model="myList2" :options="dragOptions">
-                <TaskCard v-for="item in items2" :item="item" :key="item.id"></TaskCard>
+              <draggable class="ticket-line" v-model="tickets2" :options="dragOptions">
+                <TicketCard v-for="ticket in tickets2" :ticket="ticket" :key="ticket.id"></TicketCard>
               </draggable>
             </el-col>
             <el-col :span="8">
               <h5><i class="el-icon-check"></i>Done</h5>
-              <div class="ticket-line">
-
-              </div>
+              <draggable class="ticket-line" v-model="tickets3" :options="dragOptions">
+                <TicketCard v-for="ticket in tickets3" :ticket="ticket" :key="ticket.id"></TicketCard>
+              </draggable>
             </el-col>
           </el-row>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="Config" name="second">Config</el-tab-pane>
-      <el-tab-pane label="Role" name="third">Role</el-tab-pane>
-      <el-tab-pane label="Task" name="fourth">Task</el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script scoped>
 import Draggable from "vuedraggable";
-import TaskCard from "../../components/Layouts/SubMenu/Task.vue";
+import TicketCard from "../../components/Layouts/SubMenu/Ticket.vue";
 
 export default {
   components: {
     Draggable,
-    TaskCard
+    TicketCard
   },
   created() {
     // this.fetchTaskList();
@@ -61,70 +59,63 @@ export default {
         ghostClass: "ghost"
       };
     },
-    myList: {
-      get() {
-        return this.items;
-      },
-      set(value) {
-        this.items = value;
-      }
-    },
-    myList2: {
-      get() {
-        return this.items2;
-      },
-      set(value) {
-        this.items2 = value;
-      }
-    }
   },
   data() {
     return {
-      activeName: 'first',
-      items: [
+      activeName: "my",
+      tickets: [
         {
           no: 1,
           name: "キャベツ",
-          categoryNo: "1"
+          categoryNo: "1",
+          ctime: "2018/01/01",
         },
         {
           no: 2,
           name: "ステーキ",
-          categoryNo: "2"
+          categoryNo: "2",
+          ctime: "2018/02/01",
         },
         {
           no: 3,
           name: "リンゴ",
-          categoryNo: "3"
+          categoryNo: "3",
+          ctime: "2018/05/01",
         },
         {
           no: 4,
           name: "冷蔵庫",
-          categoryNo: "4"
+          categoryNo: "4",
+          ctime: "2017/10/01",
         }
       ],
-      items2: [
+      tickets2: [
         {
           no: 5,
           name: "きゅうり",
-          categoryNo: "1"
+          categoryNo: "1",
+          ctime: "2015/01/21",
         },
         {
           no: 6,
           name: "ハンバーグ",
-          categoryNo: "2"
+          categoryNo: "2",
+          ctime: "2018/11/16",
         },
         {
           no: 7,
           name: "バナナ",
-          categoryNo: "3"
+          categoryNo: "3",
+          ctime: "2018/05/07",
         },
         {
           no: 8,
           name: "PS4",
-          categoryNo: "4"
+          categoryNo: "4",
+          ctime: "2018/08/03",
         }
-      ]
+      ],
+      tickets3: [],
     };
   }
 };
@@ -133,20 +124,21 @@ export default {
 <style scoped>
 h5 {
   padding-left: 8px;
-  color: #48a8ff;
+  color: #8492a6;
 }
-
 i {
   margin-right: 12px;
 }
-
+.ticket-list {
+  margin-top: 10px;
+}
 .ticket-line {
-  background-color: #e5e9f2;
+  background-color: #ffffff;
+  border: solid 1px #e6e6e6;
   padding: 10px;
   border-radius: 2px;
   min-height: 500px;
 }
-
 .ghost {
   opacity: 0.5;
   background: #ddd;

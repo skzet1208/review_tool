@@ -7,7 +7,7 @@
         <span>Dashbord</span>
       </el-menu-item>
       <el-menu-item index="/ticket/list">
-        <i class="el-icon-document"></i>
+        <i class="el-icon-tickets"></i>
         <span>レビュー一覧</span>
       </el-menu-item>
       <el-menu-item index="4">
@@ -22,7 +22,7 @@
         </template>
 
         <el-menu-item-group title="ユーザ管理">
-          <el-menu-item index="/admin/user/add">ユーザ一覧</el-menu-item>
+          <el-menu-item index="/admin/user/list">ユーザ一覧</el-menu-item>
           <el-menu-item index="/admin/user/add">ユーザ登録</el-menu-item>
         </el-menu-item-group>
 
