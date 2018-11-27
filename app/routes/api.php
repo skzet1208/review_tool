@@ -15,7 +15,14 @@ use Illuminate\Http\Request;
 
 Route::post('/login', 'AuthController@login');
 
+    Route::get('/ticket/all', 'Api\TicketController@all');
+
 Route::group(['middleware' => 'auth:api'], function () {
+    // Auth
     Route::get('/me', 'AuthController@me');
     Route::get('/logout', 'AuthController@logout');
+
+    // Task
+
+    // Admin
 });

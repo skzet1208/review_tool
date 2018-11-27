@@ -14340,11 +14340,15 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
   state: {
-    isLogin: false
+    isLogin: false,
+    tickets: []
   },
   mutations: {
     login: function login(state) {
       state.isLogin = true;
+    },
+    set_tickets: function set_tickets(state, payload) {
+      state.tickets = payload;
     }
   }
 }));
@@ -33086,8 +33090,8 @@ exports.push([module.i, "\nh5[data-v-add67b30] {\n  padding-left: 8px;\n  color:
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuedraggable__ = __webpack_require__(110);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuedraggable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vuedraggable__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Layouts_SubMenu_Ticket_vue__ = __webpack_require__(238);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Layouts_SubMenu_Ticket_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Layouts_SubMenu_Ticket_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Layouts_Task_Ticket_vue__ = __webpack_require__(246);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Layouts_Task_Ticket_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Layouts_Task_Ticket_vue__);
 //
 //
 //
@@ -33127,20 +33131,57 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     Draggable: __WEBPACK_IMPORTED_MODULE_0_vuedraggable___default.a,
-    TicketCard: __WEBPACK_IMPORTED_MODULE_1__components_Layouts_SubMenu_Ticket_vue___default.a
+    TicketCard: __WEBPACK_IMPORTED_MODULE_1__components_Layouts_Task_Ticket_vue___default.a
   },
   created: function created() {
-    // this.fetchTaskList();
+    this.fetchTaskList(); // タスク情報 取得
   },
 
-  // methods: {
-  //   fetchCarouselImages() {
-  //     axios.get("/api/task/list/" + this.$route.params.genre).then(res => {
-  //       this.carousel_images = res.data;
-  //       this.show = true;
-  //     });
-  //   }
-  // },
+  methods: {
+    fetchTaskList: function fetchTaskList() {
+      var _this = this;
+
+      axios.get("/api/ticket/all").then(function (res) {
+        _this.$store.commit("set_tickets", res.data);
+        _this.setTaskList();
+      });
+    },
+    setTaskList: function setTaskList() {
+      console.log(this.$store.state.tickets);
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.$store.state.tickets[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var v = _step.value;
+
+          if (v.status == 1) {
+            this.comment_ticket.push(v);
+          } else if (v.status == 2) {
+            this.done_ticket.push(v);
+          } else {
+            this.wait_ticket.push(v);
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      this.loading = false; // ローディング解除
+    }
+  },
   computed: {
     // ドラッグオプション
     dragOptions: function dragOptions() {
@@ -33153,50 +33194,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   data: function data() {
     return {
+      loading: "true",
       activeName: "my",
-      tickets: [{
-        no: 1,
-        name: "キャベツ",
-        categoryNo: "1",
-        ctime: "2018/01/01"
-      }, {
-        no: 2,
-        name: "ステーキ",
-        categoryNo: "2",
-        ctime: "2018/02/01"
-      }, {
-        no: 3,
-        name: "リンゴ",
-        categoryNo: "3",
-        ctime: "2018/05/01"
-      }, {
-        no: 4,
-        name: "冷蔵庫",
-        categoryNo: "4",
-        ctime: "2017/10/01"
-      }],
-      tickets2: [{
-        no: 5,
-        name: "きゅうり",
-        categoryNo: "1",
-        ctime: "2015/01/21"
-      }, {
-        no: 6,
-        name: "ハンバーグ",
-        categoryNo: "2",
-        ctime: "2018/11/16"
-      }, {
-        no: 7,
-        name: "バナナ",
-        categoryNo: "3",
-        ctime: "2018/05/07"
-      }, {
-        no: 8,
-        name: "PS4",
-        categoryNo: "4",
-        ctime: "2018/08/03"
-      }],
-      tickets3: []
+      wait_ticket: [],
+      comment_ticket: [],
+      done_ticket: []
     };
   }
 });
@@ -35199,7 +35201,20 @@ var render = function() {
           _c("el-tab-pane", { attrs: { label: "My", name: "my" } }, [
             _c(
               "div",
-              { staticClass: "ticket-list" },
+              {
+                directives: [
+                  {
+                    name: "loading",
+                    rawName: "v-loading",
+                    value: _vm.loading,
+                    expression: "loading"
+                  }
+                ],
+                staticClass: "ticket-list",
+                attrs: {
+                  "element-loading-background": "rgba(248, 250, 252, 0.8)"
+                }
+              },
               [
                 _c(
                   "el-row",
@@ -35211,7 +35226,7 @@ var render = function() {
                       [
                         _c("h5", [
                           _c("i", { staticClass: "el-icon-tickets" }),
-                          _vm._v("Ticket")
+                          _vm._v("Wait Ticket")
                         ]),
                         _vm._v(" "),
                         _c(
@@ -35220,14 +35235,14 @@ var render = function() {
                             staticClass: "ticket-line",
                             attrs: { options: _vm.dragOptions },
                             model: {
-                              value: _vm.tickets,
+                              value: _vm.wait_ticket,
                               callback: function($$v) {
-                                _vm.tickets = $$v
+                                _vm.wait_ticket = $$v
                               },
-                              expression: "tickets"
+                              expression: "wait_ticket"
                             }
                           },
-                          _vm._l(_vm.tickets, function(ticket) {
+                          _vm._l(_vm.wait_ticket, function(ticket) {
                             return _c("TicketCard", {
                               key: ticket.id,
                               attrs: { ticket: ticket }
@@ -35253,14 +35268,14 @@ var render = function() {
                             staticClass: "ticket-line",
                             attrs: { options: _vm.dragOptions },
                             model: {
-                              value: _vm.tickets2,
+                              value: _vm.comment_ticket,
                               callback: function($$v) {
-                                _vm.tickets2 = $$v
+                                _vm.comment_ticket = $$v
                               },
-                              expression: "tickets2"
+                              expression: "comment_ticket"
                             }
                           },
-                          _vm._l(_vm.tickets2, function(ticket) {
+                          _vm._l(_vm.comment_ticket, function(ticket) {
                             return _c("TicketCard", {
                               key: ticket.id,
                               attrs: { ticket: ticket }
@@ -35286,14 +35301,14 @@ var render = function() {
                             staticClass: "ticket-line",
                             attrs: { options: _vm.dragOptions },
                             model: {
-                              value: _vm.tickets3,
+                              value: _vm.done_ticket,
                               callback: function($$v) {
-                                _vm.tickets3 = $$v
+                                _vm.done_ticket = $$v
                               },
-                              expression: "tickets3"
+                              expression: "done_ticket"
                             }
                           },
-                          _vm._l(_vm.tickets3, function(ticket) {
+                          _vm._l(_vm.done_ticket, function(ticket) {
                             return _c("TicketCard", {
                               key: ticket.id,
                               attrs: { ticket: ticket }
@@ -102717,228 +102732,11 @@ module.exports = function spread(callback) {
 
 /***/ }),
 /* 237 */,
-/* 238 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(239)
-}
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(241)
-/* template */
-var __vue_template__ = __webpack_require__(242)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = "data-v-811719e6"
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/Layouts/SubMenu/Ticket.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-811719e6", Component.options)
-  } else {
-    hotAPI.reload("data-v-811719e6", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 239 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(240);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(17)("5d3cb179", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-811719e6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Ticket.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-811719e6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Ticket.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 240 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(10)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.header[data-v-811719e6] {\n  padding: 7px 10px 0px;\n}\n.body[data-v-811719e6] {\n  padding: 7px;\n}\n.bottom[data-v-811719e6] {\n  padding: 0px 7px 4px;\n}\n.no[data-v-811719e6] {\n  font-size: 0.6rem;\n  color: #999;\n}\n.time[data-v-811719e6] {\n  font-size: 0.8rem;\n  color: #999;\n}\n.el-card.warning[data-v-811719e6] {\n  border-color: #e6a23c;\n}\n.el-card.danger[data-v-811719e6] {\n  border-color: #f56c6c;\n}\n.task-card[data-v-811719e6] {\n  border-radius: 4px;\n}\n.task-card[data-v-811719e6]:not(:last-child) {\n  margin-bottom: 10px;\n}\n.task-menu[data-v-811719e6] {\n  float: right;\n}\n.el-button[data-v-811719e6] {\n  padding: 0;\n}\n.el-dropdown-menu i[data-v-811719e6] {\n  margin-right: 12px;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 241 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["ticket"]
-});
-
-/***/ }),
-/* 242 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "task-card" },
-    [
-      _c(
-        "el-card",
-        {
-          staticClass: "denger",
-          attrs: { shadow: "never", "body-style": { padding: "0px" } }
-        },
-        [
-          _c(
-            "div",
-            { staticClass: "header clearfix" },
-            [
-              _c("span", { staticClass: "no" }, [
-                _vm._v("No. " + _vm._s(_vm.ticket.no))
-              ]),
-              _vm._v(" "),
-              _c(
-                "el-dropdown",
-                { staticClass: "task-menu", attrs: { trigger: "click" } },
-                [
-                  _c(
-                    "span",
-                    { staticClass: "el-dropdown-link" },
-                    [
-                      _c("el-button", { attrs: { type: "text" } }, [
-                        _c("i", { staticClass: "el-icon-more" })
-                      ])
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-dropdown-menu",
-                    { attrs: { slot: "dropdown" }, slot: "dropdown" },
-                    [
-                      _c("el-dropdown-item", [
-                        _c("i", { staticClass: "el-icon-edit" }),
-                        _vm._v("編集")
-                      ]),
-                      _vm._v(" "),
-                      _c("el-dropdown-item", [
-                        _c("i", { staticClass: "el-icon-delete" }),
-                        _vm._v("削除")
-                      ])
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "body" }, [
-            _c("span", [_vm._v(_vm._s(_vm.ticket.name))])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "bottom" }, [
-            _c("time", { staticClass: "time" }, [
-              _c("i", { staticClass: "el-icon-time" }),
-              _vm._v(" " + _vm._s(_vm.ticket.ctime))
-            ])
-          ])
-        ]
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-811719e6", module.exports)
-  }
-}
-
-/***/ }),
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
 /* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -103135,6 +102933,228 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-12f49a29", module.exports)
+  }
+}
+
+/***/ }),
+/* 246 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(247)
+}
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(249)
+/* template */
+var __vue_template__ = __webpack_require__(250)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-6d075235"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Layouts/Task/Ticket.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6d075235", Component.options)
+  } else {
+    hotAPI.reload("data-v-6d075235", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 247 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(248);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(17)("ab6515f6", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6d075235\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Ticket.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6d075235\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Ticket.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 248 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(10)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.header[data-v-6d075235] {\n  padding: 7px 10px 0px;\n}\n.body[data-v-6d075235] {\n  padding: 7px;\n}\n.bottom[data-v-6d075235] {\n  padding: 0px 7px 4px;\n}\n.no[data-v-6d075235] {\n  font-size: 0.6rem;\n  color: #999;\n}\n.time[data-v-6d075235] {\n  font-size: 0.8rem;\n  color: #999;\n}\n.el-card.warning[data-v-6d075235] {\n  border-color: #e6a23c;\n}\n.el-card.danger[data-v-6d075235] {\n  border-color: #f56c6c;\n}\n.task-card[data-v-6d075235] {\n  border-radius: 4px;\n}\n.task-card[data-v-6d075235]:not(:last-child) {\n  margin-bottom: 10px;\n}\n.task-menu[data-v-6d075235] {\n  float: right;\n}\n.el-button[data-v-6d075235] {\n  padding: 0;\n}\n.el-dropdown-menu i[data-v-6d075235] {\n  margin-right: 12px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 249 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["ticket"]
+});
+
+/***/ }),
+/* 250 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "task-card" },
+    [
+      _c(
+        "el-card",
+        {
+          staticClass: "denger",
+          attrs: { shadow: "never", "body-style": { padding: "0px" } }
+        },
+        [
+          _c(
+            "div",
+            { staticClass: "header clearfix" },
+            [
+              _c("span", { staticClass: "no" }, [
+                _vm._v(_vm._s(_vm.ticket.key))
+              ]),
+              _vm._v(" "),
+              _c(
+                "el-dropdown",
+                { staticClass: "task-menu", attrs: { trigger: "click" } },
+                [
+                  _c(
+                    "span",
+                    { staticClass: "el-dropdown-link" },
+                    [
+                      _c("el-button", { attrs: { type: "text" } }, [
+                        _c("i", { staticClass: "el-icon-more" })
+                      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-dropdown-menu",
+                    { attrs: { slot: "dropdown" }, slot: "dropdown" },
+                    [
+                      _c("el-dropdown-item", [
+                        _c("i", { staticClass: "el-icon-edit" }),
+                        _vm._v("編集")
+                      ]),
+                      _vm._v(" "),
+                      _c("el-dropdown-item", [
+                        _c("i", { staticClass: "el-icon-delete" }),
+                        _vm._v("削除")
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "body" }, [
+            _c("span", [_vm._v(_vm._s(_vm.ticket.title))])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "bottom" }, [
+            _c("time", { staticClass: "time" }, [
+              _c("i", { staticClass: "el-icon-time" }),
+              _vm._v(" " + _vm._s(_vm.ticket.limit_datetime))
+            ])
+          ])
+        ]
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-6d075235", module.exports)
   }
 }
 

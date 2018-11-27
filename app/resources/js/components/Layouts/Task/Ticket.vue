@@ -2,7 +2,7 @@
   <div class="task-card">
     <el-card shadow="never" :body-style="{ padding: '0px' }" class="denger">
       <div class="header clearfix">
-        <span class="no">No. {{ ticket.no }}</span>
+        <span class="no">{{ ticket.key }}</span>
         <el-dropdown class="task-menu" trigger="click">
           <span class="el-dropdown-link">
             <el-button type="text">
@@ -17,11 +17,11 @@
       </div>
 
       <div class="body">
-        <span>{{ ticket.name }}</span>
+        <span>{{ ticket.title }}</span>
       </div>
 
       <div class="bottom">
-        <time class="time"><i class="el-icon-time"></i> {{ ticket.ctime }}</time>
+        <time class="time"><i class="el-icon-time"></i> {{ ticket.limit_datetime }}</time>
       </div>
     </el-card>
   </div>
