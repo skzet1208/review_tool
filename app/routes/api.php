@@ -13,16 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('/login', 'AuthController@login');
+Route::post('/register', 'Api\AuthController@register');
+Route::post('/login', 'Api\AuthController@login');
 
-    Route::get('/ticket/all', 'Api\TicketController@all');
-
-Route::group(['middleware' => 'auth:api'], function () {
+Route::middleware('auth:api')->group(function () {
     // Auth
-    Route::get('/me', 'AuthController@me');
-    Route::get('/logout', 'AuthController@logout');
+    Route::post('/logout', 'Api\AuthController@logout');
+    Route::get('/user', 'API\AuthController@getUser');
 
-    // Task
-
-    // Admin
+    // Ticket
+    Route::post('/ticket/my/review', 'Api\TicketController@myReviewList');
+    Route::post('/ticket/my/request', 'Api\TicketController@myRequestList');
 });

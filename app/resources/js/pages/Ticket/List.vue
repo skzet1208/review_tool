@@ -1,31 +1,60 @@
 <template>
   <div>
     <el-tabs v-model="activeName">
-      <el-tab-pane label="All" name="all">All</el-tab-pane>
-      <el-tab-pane label="My" name="my">
-        <div class="ticket-list" v-loading="loading" element-loading-background="rgba(248, 250, 252, 0.8)">
+      <el-tab-pane label="My Review" name="review">
+        <div
+          class="ticket-list"
+          v-loading="loading"
+          element-loading-background="rgba(248, 250, 252, 0.8)"
+        >
           <el-row :gutter="10">
             <el-col :span="8">
-              <h5><i class="el-icon-tickets"></i>Wait Ticket</h5>
-              <draggable class="ticket-line" v-model="wait_ticket" :options="dragOptions">
-                <TicketCard v-for="ticket in wait_ticket" :ticket="ticket" :key="ticket.id"></TicketCard>
+              <h5>
+                <i class="el-icon-tickets"></i>Wait Ticket
+              </h5>
+              <draggable
+                id="wait"
+                class="ticket-line"
+                v-model="wait_tickets"
+                :options="dragOptions"
+                @end="updateStatus"
+              >
+                <TicketCard v-for="ticket in wait_tickets" :ticket="ticket" :key="ticket.id"></TicketCard>
               </draggable>
             </el-col>
             <el-col :span="8">
-              <h5><i class="el-icon-message"></i>Comment</h5>
-              <draggable class="ticket-line" v-model="comment_ticket" :options="dragOptions">
-                <TicketCard v-for="ticket in comment_ticket" :ticket="ticket" :key="ticket.id"></TicketCard>
+              <h5>
+                <i class="el-icon-message"></i>Comment
+              </h5>
+              <draggable
+                id="comment"
+                class="ticket-line"
+                v-model="comment_tickets"
+                :options="dragOptions"
+                @end="updateStatus"
+              >
+                <TicketCard v-for="ticket in comment_tickets" :ticket="ticket" :key="ticket.id"></TicketCard>
               </draggable>
             </el-col>
             <el-col :span="8">
-              <h5><i class="el-icon-check"></i>Done</h5>
-              <draggable class="ticket-line" v-model="done_ticket" :options="dragOptions">
-                <TicketCard v-for="ticket in done_ticket" :ticket="ticket" :key="ticket.id"></TicketCard>
+              <h5>
+                <i class="el-icon-check"></i>Done
+              </h5>
+              <draggable
+                id="done"
+                class="ticket-line"
+                v-model="done_tickets"
+                :options="dragOptions"
+                @end="updateStatus"
+              >
+                <TicketCard v-for="ticket in done_tickets" :ticket="ticket" :key="ticket.id"></TicketCard>
               </draggable>
             </el-col>
           </el-row>
         </div>
       </el-tab-pane>
+      <el-tab-pane label="My Request" name="request">My Request</el-tab-pane>
+      <el-tab-pane label="All" name="all">All</el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -39,27 +68,79 @@ export default {
     Draggable,
     TicketCard
   },
+  data() {
+    return {
+      loading: "true",
+      activeName: "review"
+    };
+  },
   created() {
-    this.fetchTaskList(); // タスク情報 取得
+    this.fetchTicketList();
   },
   methods: {
-    fetchTaskList() {
-      axios.get("/api/ticket/all").then(res => {
-        this.$store.commit("set_tickets", res.data);
-        this.setTaskList();
+    // タスク情報 取得
+    fetchTicketList() {
+      this.$store.dispatch("task/myReviews").then(() => {
+        this.loading = false; // ローディング解除
       });
     },
-    setTaskList() {
-      console.log(this.$store.state.tickets);
-      for(let v of this.$store.state.tickets) {
-        if (v.status == 1) { this.comment_ticket.push(v) }
-        else if (v.status == 2) { this.done_ticket.push(v) }
-        else { this.wait_ticket.push(v) }
+    // チケット移動時、実行メソッド
+    updateStatus(event) {
+      if (event.from.id != event.to.id) {
+        this.loading = true;
+
+        // ステータス変更API
+        // axios
+        //   .post("/api/ticket/update_status", {
+        //     user_id: 1,
+        //     ticket_id: event.to.id,
+        //     status: event.item.dataset.id
+        //   })
+        //   .then(res => {
+        //     this.loading = false;
+        //   })
+        //   .catch(err => {
+        //     console.log("err:", err);
+        //     this.$store.commit("myReviews", res.data);
+        //   });
+        this.loading = false;
       }
-      this.loading = false; // ローディング解除
-    },
+    }
   },
   computed: {
+    wait_tickets: {
+      get() {
+        return this.$store.getters["task/tickets"]("wait");
+      },
+      set(val) {
+        this.$store.dispatch("task/tickets", {
+          status_key: "wait",
+          tickets: val
+        });
+      }
+    },
+    comment_tickets: {
+      get() {
+        return this.$store.getters["task/tickets"]("comment");
+      },
+      set(val) {
+        this.$store.dispatch("task/tickets", {
+          status_key: "comment",
+          tickets: val
+        });
+      }
+    },
+    done_tickets: {
+      get() {
+        return this.$store.getters["task/tickets"]("done");
+      },
+      set(val) {
+        this.$store.dispatch("task/tickets", {
+          status_key: "done",
+          tickets: val
+        });
+      }
+    },
     // ドラッグオプション
     dragOptions() {
       return {
@@ -68,15 +149,6 @@ export default {
         ghostClass: "ghost"
       };
     }
-  },
-  data() {
-    return {
-      loading: "true",
-      activeName: "my",
-      wait_ticket: [],
-      comment_ticket: [],
-      done_ticket: []
-    };
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="task-card">
+  <div class="task-card" :data-id=ticket.id>
     <el-card shadow="never" :body-style="{ padding: '0px' }" class="denger">
       <div class="header clearfix">
         <span class="no">{{ ticket.key }}</span>

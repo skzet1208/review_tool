@@ -7,8 +7,8 @@
 
     <title>たいとる</title>
 
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <style>
       #app {
           display: flex;

@@ -1,15 +1,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import mutations from './mutations'
+import actions from './actions'
+import task from './modules/task'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  // Global
   state: {
-    isLogin: false,
-    tickets: [],
+    // Auth
+    token: '',
+    user: [],
   },
-  mutations: {
-    login: state => { state.isLogin = true },
-    set_tickets: (state, payload) => { state.tickets = payload },
+  getters: {
+    // Auth
+    token: state => { return state.token },
+    user: state => { return state.user },
   },
+  modules: {
+    task,
+  },
+  mutations,
+  actions,
 })

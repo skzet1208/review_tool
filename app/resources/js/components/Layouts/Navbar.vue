@@ -10,7 +10,7 @@
           <li>
             <el-dropdown trigger="click">
               <span class="el-dropdown-link">
-                <img :src="'/img/user_icon.jpg'" width="40" />
+                <img :src="'/img/user_icon.jpg'" width="40">
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>設定</el-dropdown-item>
@@ -20,9 +20,10 @@
           </li>
           <li>
             <i class="el-icon-bell">
-              <el-badge :value="200" :max="99" class="item" /></i>
+              <el-badge :value="200" :max="99" class="item"/>
+            </i>
           </li>
-          <li>
+          <li @click="openForm">
             <i class="el-icon-edit"></i>
           </li>
         </ul>
@@ -33,6 +34,11 @@
 
 <script>
 export default {
+  methods: {
+    openForm() {
+      this.$store.dispatch("task/dialog_visible", true);
+    }
+  }
 };
 </script>
 
